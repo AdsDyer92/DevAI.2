@@ -1,1 +1,44 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family:Arial;padding:30px">
 
+<h1>Development Decision Engine</h1>
+
+<button onclick="planit()">Test PlanIt</button>
+<pre id="planit"></pre>
+
+<h2>Committee Analysis</h2>
+
+<textarea id="das" placeholder="Paste DAS"></textarea><br><br>
+<textarea id="decision" placeholder="Paste decision"></textarea><br><br>
+<textarea id="minutes" placeholder="Paste minutes"></textarea><br><br>
+
+<button onclick="analyse()">Analyse</button>
+
+<pre id="output"></pre>
+
+<script>
+async function planit(){
+  const res = await fetch("/api/planit");
+  const data = await res.json();
+  document.getElementById("planit").innerText = data.preview;
+}
+
+async function analyse(){
+  const res = await fetch("/api/committee-analyse", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      das: das.value,
+      decision: decision.value,
+      minutes: minutes.value
+    })
+  });
+
+  const data = await res.json();
+  output.innerText = JSON.stringify(data, null, 2);
+}
+</script>
+
+</body>
+</html>
