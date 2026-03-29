@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Southwark Development Decision Engine v2</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <span class="eyebrow">Southwark-only • dashboard, map, appraisal, committee intelligence, procurement</span>
+      <h1>Southwark Development Decision Engine v2</h1>
+      <p>This version upgrades the live tool into a five-page workflow: Dashboard, Map & Comparables, Appraisal, Committee Intelligence, and Specialist Procurement.</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Site inputs</h2>
+        <label>Southwark site address</label>
+        <input id="address" value="55 Nigel Road, SE15 4NP" />
+        <label>Site area</label>
+        <input id="area" type="number" step="0.001" value="0.391" />
+        <label>Area unit</label>
+        <select id="unit"><option value="acres">Acres</option><option value="ha">Hectares</option><option value="sqm">Sq m</option></select>
+        <label>Planning context</label>
+        <select id="context"><option value="urban">Urban residential</option><option value="town">Town centre / high street</option><option value="suburban">Suburban / low-rise</option><option value="growth">Growth area / opportunity area</option></select>
+        <label>Transport accessibility</label>
+        <select id="ptal"><option value="medium">Medium</option><option value="high">High</option><option value="very-high">Very high</option><option value="low">Low</option></select>
+        <label>Existing use</label>
+        <select id="use"><option value="community">Community</option><option value="residential">Residential</option><option value="commercial">Commercial</option><option value="industrial">Industrial</option><option value="other">Other</option></select>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+          <label><input id="heritage" type="checkbox"> Heritage</label>
+          <label><input id="community" type="checkbox" checked> Community use</label>
+          <label><input id="tall" type="checkbox"> Tall-building location</label>
+          <label><input id="flood" type="checkbox"> Flood-risk</label>
+          <label><input id="employment" type="checkbox"> Employment flag</label>
+        </div>
+        <div class="btns">
+          <button onclick="runAll()">Refresh engine</button>
+          <button class="secondary" onclick="downloadSummary()">Download summary</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="metrics">
+          <div class="metric"><div class="label">Suggested height</div><div class="value" id="heightValue">—</div><div class="subtext">contextual envelope</div></div>
+          <div class="metric"><div class="label">Recommended density</div><div class="value" id="densityValue">—</div><div class="subtext">units per hectare</div></div>
+          <div class="metric"><div class="label">Estimated homes</div><div class="value" id="homesValue">—</div><div class="subtext">target option</div></div>
+          <div class="metric"><div class="label">Parking</div><div class="value" id="parkingValue">—</div><div class="subtext">max spaces</div></div>
+          <div class="metric"><div class="label">Amenity</div><div class="value" id="amenityValue">—</div><div class="subtext">sqm total</div></div>
+          <div class="metric"><div class="label">Residual land value</div><div class="value" id="rlvValue">—</div><div class="subtext">first pass only</div></div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" data-page="dashboard" onclick="showPage('dashboard')">Dashboard</button>
+          <button class="tab" data-page="map" onclick="showPage('map')">Map & Comparables</button>
+          <button class="tab" data-page="appraisal" onclick="showPage('appraisal')">Appraisal</button>
+          <button class="tab" data-page="committee" onclick="showPage('committee')">Committee Intelligence</button>
+          <button class="tab" data-page="procurement" onclick="showPage('procurement')">Procurement</button>
+        </div>
+
+        <div id="dashboard" class="page active">
+          <div class="card">
+            <h3>Recommended scheme position</h3>
+            <p id="headlineText"></p>
+            <p><strong>Parking:</strong> <span id="dashboardParking"></span></p>
+            <p><strong>Amenity:</strong> <span id="dashboardAmenity"></span></p>
+          </div>
+        </div>
+
+        <div id="map" class="page">
+          <div class="card">
+            <h3>Map & comparables</h3>
+            <div class="map-box">
+              <div><strong>Map placeholder</strong><br>Replace this in v3 with Mapbox or Leaflet and plot the live site plus Southwark comparables from UK PlanIt.</div>
+            </div>
+            <div id="planitResults"></div>
+          </div>
+        </div>
+
+        <div id="appraisal" class="page">
+          <div class="card">
+            <h3>Recommended option appraisal</h3>
+            <div class="three">
+              <div class="metric"><div class="label">GDV</div><div class="value" id="gdvText"></div></div>
+              <div class="metric"><div class="label">Build cost</div><div class="value" id="buildCostText"></div></div>
+              <div class="metric"><div class="label">Saleable area</div><div class="value" id="saleableText"></div></div>
+            </div>
+            <div class="soft" style="margin-top:16px;">
+              <strong>Sensitivity</strong>
+              <ul class="list" id="sensitivity"></ul>
+            </div>
+            <p class="small">Residual land value: <strong id="rlvText"></strong></p>
+          </div>
+        </div>
+
+        <div id="committee" class="page">
+          <div class="card">
+            <h3>Committee intelligence</h3>
+            <p class="small">Paste the DAS, decision notice, committee minutes, and optional YouTube URL. The engine will pull out key themes and relate them to the live site.</p>
+            <label>DAS text</label>
+            <textarea id="dasText">Paste DAS text here.</textarea>
+            <label>Decision notice text</label>
+            <textarea id="decisionText">Paste decision notice text here.</textarea>
+            <label>Committee minutes / webcast notes</label>
+            <textarea id="minutesText">Paste committee minutes or webcast notes here.</textarea>
+            <label>YouTube URL</label>
+            <input id="youtubeUrl" value="" placeholder="Optional webcast URL" />
+            <div class="btns"><button onclick="analyseCommittee()">Analyse committee material</button></div>
+            <div class="two" style="margin-top:16px;">
+              <div class="soft">
+                <strong>Detected themes</strong>
+                <div id="committeeThemes" style="margin-top:10px;"></div>
+                <p class="small" style="margin-top:12px;"><strong>Decision read-out:</strong> <span id="committeeDecision"></span></p>
+              </div>
+              <div class="soft">
+                <strong>How it relates to the live site</strong>
+                <ul class="list" id="committeeRelevance" style="margin-top:10px;"></ul>
+                <p class="small" style="margin-top:12px;"><strong>Suggested response moves</strong></p>
+                <ul class="list" id="committeeMoves"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="procurement" class="page">
+          <div class="card">
+            <h3>Specialist procurement</h3>
+            <div class="proc-grid">
+              <div>
+                <label>Discipline</label>
+                <select id="disciplineSelect" onchange="renderProcurement()">
+                  <option value="planning">Planning consultant</option>
+                  <option value="architecture">Architect</option>
+                  <option value="transport">Transport consultant</option>
+                  <option value="daylight">Daylight / sunlight consultant</option>
+                  <option value="cost">Cost consultant</option>
+                  <option value="viability">Viability consultant</option>
+                </select>
+              </div>
+              <div class="soft">
+                <strong>Southwark / Inner London fit</strong>
+                <p class="small">These are suggested starter firms and scopes. In a later version, rank them from comparable schemes and geographic experience.</p>
+              </div>
+            </div>
+            <div class="proc-grid" style="margin-top:16px;">
+              <div class="soft"><strong>Suggested specialists</strong><div id="specialistMatches"></div></div>
+              <div class="soft"><strong>Draft scope</strong><div id="specialistScope"></div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
