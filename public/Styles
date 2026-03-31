@@ -1,34 +1,68 @@
 body {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   background: #f5f5f5;
+  margin: 0;
   padding: 20px;
+  color: #111;
 }
 
 .wrap {
   max-width: 900px;
-  margin: auto;
+  margin: 0 auto;
 }
 
 .card {
-  background: white;
+  background: #ffffff;
   padding: 20px;
   margin-bottom: 20px;
   border-radius: 10px;
+  border: 1px solid #dddddd;
 }
 
-input, select, button {
+h1,
+h2,
+h3 {
+  margin-top: 0;
+}
+
+input,
+select,
+button,
+textarea {
   width: 100%;
   margin-top: 10px;
   padding: 10px;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
 }
 
 button {
-  background: black;
-  color: white;
+  background: #111111;
+  color: #ffffff;
   border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
 }
 
 .item {
-  border-bottom: 1px solid #ddd;
+  border-top: 1px solid #dddddd;
   padding: 10px 0;
+}
+
+.item:first-child {
+  border-top: none;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+p,
+li {
+  line-height: 1.5;
 }
