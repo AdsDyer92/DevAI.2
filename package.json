@@ -1,8 +1,8 @@
 {
-  "name": "southwark-decision-engine-v2",
-  "version": "2.0.0",
+  "name": "southwark-decision-engine-v3",
+  "version": "3.1.0",
   "private": true,
-  "description": "Southwark development decision engine v2",
+  "description": "Southwark development decision engine v3",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
